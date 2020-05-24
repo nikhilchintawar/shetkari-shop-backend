@@ -16,6 +16,7 @@ const signup = (req, res) => {
     const user = new User(req.body)
     user.save((err, user) => {
         if(err){
+            console.log(err)
             return res.status(400).json({
                 err: "not able to save user in db."
             })
@@ -63,7 +64,7 @@ const signin = (req, res) => {
 }
 
 const signOut = (req, res) => {
-    res.clearCookie(token)
+    res.clearCookie('token')
     res.json({
         message: "signed out successfully."
     });
@@ -76,9 +77,10 @@ const isSignedIn = expressjwt({
 });
 
 //custom middleware
-const isAuthenticated = (req, res, next) => {
+const isAuthenticated = (req, res, next, error) => {
     let checker = req.profile && req.auth && req.profile._id == req.auth._id
     if(!checker){
+        console.log(error)
         return res.status(403).json({
             err: "access denied."
         })
@@ -86,20 +88,19 @@ const isAuthenticated = (req, res, next) => {
     next();
 }
 
-const isFarmer = (req, res, next) => {
-    if(req.profile.role === 0){
-        res.status(403).json({
-            err: "only admin access."
-        })
-    }
-    next();
-}
+// const isFarmer = (req, res, next) => {
+//     if(req.profile.role === 0){
+//         res.status(403).json({
+//             err: "only admin access."
+//         })
+//     }
+//     next();
+// }
 
 module.exports =({
     signup,
     signin, 
     signOut,
     isSignedIn,
-    isAuthenticated,
-    isFarmer 
+    isAuthenticated
 })

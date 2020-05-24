@@ -8,6 +8,7 @@ const cors = require("cors");
 //my routes
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const productRoutes = require("./routes/product");
 
 
 const app = express()
@@ -15,7 +16,8 @@ const app = express()
 //db connection
 mongoose.connect(process.env.DATABASE,{
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
 })
         .then(() => console.log("db connected"))
         .catch((error) => console.log(error))
@@ -28,6 +30,7 @@ app.use(cors());
 //routes
 app.use("/api", authRoutes)
 app.use("/api", userRoutes)
+app.use("/api", productRoutes)
 
 app.get('/', (req, res) => {
     res.json({
