@@ -21,9 +21,9 @@ const productSchema = new mongoose.Schema({
         maxlength: true
     },
     category: {
-        type: ObjectId,
-        ref: "Category",
-        required: true
+        type: String,
+        default: 'grain',
+        enum: ['vegetable', 'grain']
     },
     stock: {
         type: Number

@@ -25,7 +25,7 @@ const createProduct = (req, res) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
 
-    form.parse(req, (err, fields, files) => {
+    form.parse(req, (err, fields, file) => {
         if (err) {
           return res.satus(400).json({
               err: "not able to upload the image"

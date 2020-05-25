@@ -27,6 +27,7 @@ const signup = (req, res) => {
             email: user.email,
             mobileNumber: user.mobileNumber,
             postalAddress: user.postalAddress,
+            role: user.role,
             id: user._id
 
         })
@@ -77,10 +78,10 @@ const isSignedIn = expressjwt({
 });
 
 //custom middleware
-const isAuthenticated = (req, res, next, error) => {
+const isAuthenticated = (req, res, next,err) => {
     let checker = req.profile && req.auth && req.profile._id == req.auth._id
     if(!checker){
-        console.log(error)
+        console.log(err)
         return res.status(403).json({
             err: "access denied."
         })
@@ -88,19 +89,21 @@ const isAuthenticated = (req, res, next, error) => {
     next();
 }
 
-// const isFarmer = (req, res, next) => {
-//     if(req.profile.role === 0){
-//         res.status(403).json({
-//             err: "only admin access."
-//         })
-//     }
-//     next();
-// }
+const isFarmer = (req, res, next, err) => {
+  
+    if(req.profile.role === 0){ 
+        res.status(403).json({
+            err: "only admin access."
+        })
+    }
+    next();
+}
 
 module.exports =({
     signup,
     signin, 
     signOut,
     isSignedIn,
-    isAuthenticated
+    isAuthenticated,
+    isFarmer
 })
