@@ -7,21 +7,16 @@ const fs = require('fs');
 
 const getProductId = (req, res, next, id) => {
     Product.findById(id).exec((err, product) => {
-        if(err || !product){
+        if(err){
             return res.status(400).json({
                 err: 'no product found'
             })
         }
         req.product = product
-        console.log(req.product)
         next()
     })
 }
 
-//bug
-const getProduct = (req, res) => {
-    return res.json(req.params._id)
-}
 
 const createProduct = (req, res) => {
 
@@ -66,6 +61,17 @@ const createProduct = (req, res) => {
     })
 }
 
+//bug
+const getProduct = (req, res) => {
+    Product.findById(req.params.productId).exec((err, product) => {
+        if(err){
+            return res.status(400).json({
+                err: 'no product found'
+            })
+        }
+     res.json(product)
+})
+}
 
 //bug
 const updateProduct = ( req, res ) =>{
@@ -84,7 +90,6 @@ const updateProduct = ( req, res ) =>{
         let product = req.product;
         product = _.extend(product, fields)
        
-
         //handle file
         if(file.photo){
                 if (file.photo.size > 3000000) {
@@ -98,15 +103,14 @@ const updateProduct = ( req, res ) =>{
         
     
         //save to db
-        Product.findOneAndUpdate(
-            {_id: req.product._id},
-            {$push: {product: product}},
-            {new: true},
+        Product.findByIdAndUpdate(
+            req.params.productId,
+            {$set: product},
             (err, product) =>{
             if(err){
                 console.log(err)
                 res.status(400).json({
-                    error: 'updation of failed'
+                    err: 'updation failed'
                 })
             }   
             res.json(product)
