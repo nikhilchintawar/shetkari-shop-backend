@@ -17,7 +17,8 @@ const app = express()
 mongoose.connect(process.env.DATABASE,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 })
         .then(() => console.log("db connected"))
         .catch((error) => console.log(error))

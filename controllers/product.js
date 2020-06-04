@@ -1,7 +1,8 @@
 const Product = require("../models/product");
 const formidable = require('formidable');
-const fs = require('fs');
 const _ = require('lodash');
+const fs = require('fs');
+
 
 
 const getProductId = (req, res, next, id) => {
@@ -12,12 +13,14 @@ const getProductId = (req, res, next, id) => {
             })
         }
         req.product = product
+        console.log(req.product)
         next()
     })
 }
 
+//bug
 const getProduct = (req, res) => {
-    return res.json(req.profile)
+    return res.json(req.params._id)
 }
 
 const createProduct = (req, res) => {
@@ -41,7 +44,7 @@ const createProduct = (req, res) => {
         }
         
         //todo: restrictions on field
-        let product = new Product(fields)
+        let product = new Product(fields)   
         //handle file
         if(file.photo){
             if (file.photo.size > 3000000) {
@@ -52,7 +55,7 @@ const createProduct = (req, res) => {
             product.photo.data = fs.readFileSync(file.photo.path)
             product.photo.contentType = file.photo.type
         }
-        product.save((err, product) =>{
+       product.save((err, product) =>{
             if(err){
                 res.status(400).json({
                     error: 'saving tshirt in db failed'
@@ -63,6 +66,8 @@ const createProduct = (req, res) => {
     })
 }
 
+
+//bug
 const updateProduct = ( req, res ) =>{
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
@@ -75,8 +80,10 @@ const updateProduct = ( req, res ) =>{
         }
 
         //updation code
+        
         let product = req.product;
         product = _.extend(product, fields)
+       
 
         //handle file
         if(file.photo){
@@ -88,23 +95,36 @@ const updateProduct = ( req, res ) =>{
                 product.photo.data = fs.readFileSync(file.photo.path)
                 product.photo.contentType = file.photo.type
         }
-
+        
+    
         //save to db
-        product.save((err, product) =>{
+        Product.findOneAndUpdate(
+            {_id: req.product._id},
+            {$push: {product: product}},
+            {new: true},
+            (err, product) =>{
             if(err){
+                console.log(err)
                 res.status(400).json({
                     error: 'updation of failed'
                 })
-            }
+            }   
             res.json(product)
         })
     })
 }
 
+const photo = (req, res) =>{
+    if (req.product.photo.data) {
+        res.set('Content-Type', req.product.photo.contentType)
+        return res.send(req.product.photo.data)
+    }
+}
+
+
 
 const deleteProduct = (req, res) => {
-    let product = req.product;
-    product.deleteOne((err, deleteProduct) => {
+    Product.deleteOne((err, deleteProduct) => {
         if(err){
             return res.satus(400).json({
                 err: "not able to delete the product"
@@ -123,5 +143,6 @@ module.exports = ({
     getProduct,
     createProduct,
     updateProduct,
+    photo,
     deleteProduct
 })

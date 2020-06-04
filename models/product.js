@@ -26,7 +26,8 @@ const productSchema = new mongoose.Schema({
         enum: ['vegetable', 'grain']
     },
     stock: {
-        type: Number
+        type: Number,
+        default: 0
     },
     sold: {
         type: Number,
