@@ -1,4 +1,2 @@
 node_modules
 .env
-controllers/farmer.js
-models/farmer.js
