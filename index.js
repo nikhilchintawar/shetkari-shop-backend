@@ -13,6 +13,9 @@ const productRoutes = require("./routes/product");
 
 const app = express()
 
+//port
+const port = process.env.PORT || 8000
+
 //db connection
 mongoose.connect(process.env.DATABASE,{
     useNewUrlParser: true,
@@ -33,12 +36,8 @@ app.use("/api", authRoutes)
 app.use("/api", userRoutes)
 app.use("/api", productRoutes)
 
-app.get('/', (req, res) => {
-    res.json({
-        "user": "nikhil"
-    })
-})
 
-app.listen(3000, () => {
-    console.log("port is running on port 3000")
+
+app.listen(port, () => {
+    console.log("port is running on port 8000")
 })

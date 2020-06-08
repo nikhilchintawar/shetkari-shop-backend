@@ -35,24 +35,28 @@ const signup = (req, res) => {
 }
 
 const signin = (req, res) => {
-    const { email, password } = req.body;
     const errors = validationResult(req)
+    const { email, password } = req.body;
 
     if(!errors.isEmpty()){
         return res.status(422).json({
             error: errors.array()[0].msg
         });
     }
+
+    
+  
     User.findOne({ email }, (err, user) => {
         if(err || !user) {
             return res.status(400).json({
                 err: "email does not exist, please enter valid email address."
             })
-        }
+        } 
         if(!user.authenticate(password)){
+            console.log(user.authenticate(password))
             return res.status(401).json({
-                err: "email and password does not exist."
-            })
+                err: "password does not exist."
+            });
         }
         //created token
         const token = jwt.sign({_id: user}, process.env.SECRET)
