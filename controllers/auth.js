@@ -14,11 +14,11 @@ const signup = (req, res) => {
     }
 
     const user = new User(req.body)
-    user.save((err, user) => {
-        if(err){
-            console.log(err)
+    user.save((error, user) => {
+        if(error){
+            console.log(error)
             return res.status(400).json({
-                err: "not able to save user in db."
+                error: "Sign Up error.Please try again."
             })
         }
         res.json({
@@ -46,18 +46,17 @@ const signin = (req, res) => {
 
     
   
-    User.findOne({ email }, (err, user) => {
-        if(err || !user) {
+    User.findOne({ email }, (error, user) => {
+        if(error || !user) {
             return res.status(400).json({
-                err: "email does not exist, please enter valid email address."
+                error: "Invalid email address.Please enter valid email address."
             })
-        } 
-        if(!user.authenticate(password)){
+        } else if(!user.authenticate(password)){
             console.log(user.authenticate(password))
             return res.status(401).json({
-                err: "password does not exist."
+                error: "Invalid password.Please enter valid password."
             });
-        }
+        } else{
         //created token
         const token = jwt.sign({_id: user}, process.env.SECRET)
         //put token in cookie
@@ -65,6 +64,7 @@ const signin = (req, res) => {
         //send response to frontend
         const { _id, firstName, lastName, email, role } = user;
         return res.json({ token, user: { _id, firstName, lastName, email, role }})
+        }
     })
 }
 
@@ -87,7 +87,7 @@ const isAuthenticated = (req, res, next,err) => {
     if(!checker){
         console.log(err)
         return res.status(403).json({
-            err: "access denied."
+            err: "Access denied."
         })
     }
     next();
