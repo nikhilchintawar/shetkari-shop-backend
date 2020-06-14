@@ -23,7 +23,6 @@ const productSchema = new mongoose.Schema({
     category: {
         type: String,
         default: 'grain',
-        enum: ['vegetable', 'grain']
     },
     stock: {
         type: Number,

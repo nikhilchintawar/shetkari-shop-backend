@@ -43,6 +43,20 @@ const updateUser = (req, res) =>{
     )
 }
 
+const deleteUser = (req, res) => {
+    User.deleteOne((error, deletedUser) => {
+        if (error) {
+            res.status.json({
+                error: "Not able to delete the user."
+            })
+        }
+        res.json({
+            message: "User is deleted",
+            deletedUser
+        })
+    });
+};
+
 const userPurchaseList = (req,res) =>{
     Order.find({user: req.profile._id})
     .populate("user", "_id firstName lastName")
@@ -91,5 +105,6 @@ module.exports = ({
     getUser,
     updateUser,
     userPurchaseList,
-    pushOrderInPurchaseList
+    pushOrderInPurchaseList,
+    deleteUser
 })

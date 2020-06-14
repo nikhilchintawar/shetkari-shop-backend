@@ -14,7 +14,7 @@ router.get('/products', getAllProducts);
 router.post('/user/:userId/product/create', isSignedIn, isAuthenticated, isFarmer, createProduct);
 router.put('/user/:userId/product/:productId', isSignedIn, isAuthenticated, isFarmer, updateProduct);
 router.delete('/user/:userId/product/:productId', isSignedIn, isAuthenticated, isFarmer, deleteProduct)
-router.get('/products/photo/:productId', photo);
+router.get('/product/photo', photo);
 
 
 module.exports = router;

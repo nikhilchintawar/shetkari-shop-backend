@@ -5,15 +5,15 @@ const fs = require('fs');
 
 
 const getProductId = (req, res, next, id) => {
-    Product.findById(id).exec((err, product) => {
-        if(err){
+    Product.findById(id).exec((error, product) => {
+        if(error){
             return res.status(400).json({
-                err: 'no product found'
+                error: 'no product found'
             })
         }
-        req.product = product
-        next()
-    })
+        req.product = product;
+        next();
+    });
 }
 
 
@@ -22,22 +22,22 @@ const createProduct = (req, res) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
 
-    form.parse(req, (err, fields, file) => {
-        if (err) {
+    form.parse(req, (error, fields, file) => {
+        if (error) {
           return res.satus(400).json({
-              err: "not able to upload the image"
+              error: "not able to upload the image"
           })       
 }
         //destructure the field
         const { name, description, price, category, stock } = fields
 
+        //restrictions on field
         if (!name || !description || !price || !category || !stock) {
             return res.status(400).json({
                 error: 'please include all fields'
             })
         }
         
-        //todo: restrictions on field
         let product = new Product(fields)   
         //handle file
         if(file.photo){
@@ -46,13 +46,15 @@ const createProduct = (req, res) => {
                     error: 'file size is too big'
                 })
             }
-            product.photo.data = fs.readFileSync(file.photo.path)
+            product.photo.data = fs.readFileSync(file.photo.path)//full path of file
             product.photo.contentType = file.photo.type
         }
-       product.save((err, product) =>{
-            if(err){
+
+        //save to db
+       product.save((error, product) =>{
+            if(error){
                 res.status(400).json({
-                    error: 'saving tshirt in db failed'
+                    error: 'saving in db failed'
                 })
             }
             res.json(product)
@@ -62,23 +64,24 @@ const createProduct = (req, res) => {
 
 
 const getProduct = (req, res) => {
-    Product.findById(req.params.productId).exec((err, product) => {
-        if(err){
+
+    Product.findById(req.params.productId).exec((error, product) => {
+        if(error){
             return res.status(400).json({
-                err: 'no product found'
+                error: 'no product found'
             })
         }
-     res.json(product)
+    return res.json(product)
 })
 }
 
-//bug
+
 const updateProduct = ( req, res ) =>{
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
 
-    form.parse(req, (err, fields, file) =>{
-        if (err) {
+    form.parse(req, (error, fields, file) =>{
+        if (error) {
             return res.status(400).json({
                 error: 'problem with image'
             });
@@ -105,11 +108,11 @@ const updateProduct = ( req, res ) =>{
         Product.findByIdAndUpdate(
             req.params.productId,
             {$set: product},
-            (err, product) =>{
-            if(err){
-                console.log(err)
+            (error, product) =>{
+            if(error){
+                console.log(error)
                 res.status(400).json({
-                    err: 'updation failed'
+                    error: 'updation failed'
                 })
             }   
             res.json(product)
@@ -117,21 +120,22 @@ const updateProduct = ( req, res ) =>{
     })
 }
 
-//bug
-const photo = (req, res) =>{
+//middleware
+const photo = (req, res, next) =>{
     if (req.product.photo.data) {
-        res.set('Content-Type', req.product.photo.contentType)
+        res.contentType(req.product.photo.contentType)
         return res.send(req.product.photo.data)
     }
-}
+    next();
+};
 
 
-
+//delete controller
 const deleteProduct = (req, res) => {
-    Product.deleteOne((err, deleteProduct) => {
-        if(err){
+    Product.deleteOne((error, deleteProduct) => {
+        if(error){
             return res.satus(400).json({
-                err: "not able to delete the product"
+                error: "not able to delete the product"
             })
         }
         res.json({
@@ -150,15 +154,16 @@ const getAllProducts = (req, res) => {
     .select('-photo')
     .sort([[sortBy, 'asc']])
     .limit(limit)
-    .exec((err, products) => {
-        if(err){
+    .exec((error, products) => {
+        if(error){
             return res.status(404).json({
-                err: "no products found"
+                error: "no products found"
             })
         }
         res.json(products)
     })
 }
+
 
 const updateStock = (req, res, next) => {
     let myOperations = req.body.order.products.map(product => {
@@ -170,10 +175,10 @@ const updateStock = (req, res, next) => {
             }
         }
     })
-    Product.bulkWrite(myOperations, {}, (err, products) => {
-        if(err){
+    Product.bulkWrite(myOperations, {}, (error, products) => {
+        if(error){
             return res.status(400).json({
-                err: "bulk operation failed"
+                error: "bulk operation failed"
             })
         }
         next()
@@ -188,5 +193,6 @@ module.exports = ({
     photo,
     deleteProduct,
     getAllProducts,
-    updateStock
+    updateStock,
+    
 })
