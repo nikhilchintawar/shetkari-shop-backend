@@ -62,8 +62,8 @@ const signin = (req, res) => {
         //put token in cookie
         res.cookie("token", token, {expire: new Date() + 300})
         //send response to frontend
-        const { _id, firstName, lastName, email, role } = user;
-        return res.json({ token, user: { _id, firstName, lastName, email, role }})
+        const { _id, firstName, lastName, email, role, mobileNumber, postalAddress } = user;
+        return res.json({ token, user: { _id, firstName, lastName, email, role, mobileNumber, postalAddress }})
         }
     })
 }
@@ -82,22 +82,24 @@ const isSignedIn = expressjwt({
 });
 
 //custom middleware
-const isAuthenticated = (req, res, next,err) => {
-    let checker = req.profile && req.auth && req.profile._id == req.auth._id
+const isAuthenticated = (req, res, next) => {
+    let checker = req.profile && req.auth && req.profile._id == req.auth._id._id
+    // console.log(req.profile._id);
+    // console.log(req.auth._id._id);
+    // console.log(checker)
     if(!checker){
-        console.log(err)
         return res.status(403).json({
-            err: "Access denied."
-        })
+            error: "Access denied."
+        });
     }
     next();
 }
 
-const isFarmer = (req, res, next, err) => {
+const isFarmer = (error,req, res, next) => {
   
     if(req.profile.role === 0){ 
         res.status(403).json({
-            err: "only admin access."
+            error: "only admin access."
         })
     }
     next();

@@ -14,7 +14,7 @@ const productRoutes = require("./routes/product");
 const app = express()
 
 //port
-const port = process.env.PORT || 8000
+const port = process.env.PORT || 5000
 
 //db connection
 mongoose.connect(process.env.DATABASE,{
@@ -39,5 +39,5 @@ app.use("/api", productRoutes)
 
 
 app.listen(port, () => {
-    console.log("port is running on port 8000")
+    console.log("port is running on port 5000")
 })

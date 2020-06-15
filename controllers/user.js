@@ -3,8 +3,8 @@ const Order = require('../models/order');
 
 
 const getUserById = (req, res, next, id)=> {
-    User.findById(id).exec((err, user) => {
-        if (err || !user) {
+    User.findById(id).exec((error, user) => {
+        if (error) {
             return res.status(400).json({
                 error: 'no user is found in db'
             })
@@ -20,6 +20,7 @@ const getUser = (req, res) =>{
     req.profile.encry_password = undefined
     req.profile.createdAt = undefined
     req.profile.updatedAt = undefined
+    console.log(req.profile)
     return res.json(req.profile)
 }
 
@@ -28,8 +29,8 @@ const updateUser = (req, res) =>{
         {_id: req.profile._id},
         {$set: req.body},
         {new: true, useFindAndModify: false},
-        (err, user) => {
-            if (err) {
+        (error, user) => {
+            if (error) {
                 return res.status(400).json({
                     error: "you are not authorized to update the user"
                 })
@@ -44,9 +45,9 @@ const updateUser = (req, res) =>{
 }
 
 const deleteUser = (req, res) => {
-    User.deleteOne((error, deletedUser) => {
+    User.findByIdAndDelete(req.params.userId).exec((error, deletedUser) => {
         if (error) {
-            res.status.json({
+            res.status(400).json({
                 error: "Not able to delete the user."
             })
         }
@@ -60,8 +61,8 @@ const deleteUser = (req, res) => {
 const userPurchaseList = (req,res) =>{
     Order.find({user: req.profile._id})
     .populate("user", "_id firstName lastName")
-    .exec((err, order) =>{
-        if (err) {
+    .exec((error, order) =>{
+        if (error) {
             return res.status(400).json({
                 error: "no order by this user"
             })
@@ -88,8 +89,8 @@ const pushOrderInPurchaseList = (req, res, next) =>{
         {_id: req.profile._id},
         {$push: {purchases: purchases}},
         {new: true},
-        (err, purchases) => {
-            if(err){
+        (error, purchases) => {
+            if(error){
                 return res.status(400).json({
                     error: 'unable to save purchase list'
                 })
