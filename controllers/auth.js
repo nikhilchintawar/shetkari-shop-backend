@@ -83,9 +83,9 @@ const isSignedIn = expressjwt({
 //custom middleware
 const isAuthenticated = (req, res, next) => {
     let checker = req.profile && req.auth && req.profile._id == req.auth._id
-    console.log(req.profile._id);
-    console.log(req.auth._id);
-    console.log(checker)
+    // console.log(req.profile._id);
+    // console.log(req.auth._id);
+    // console.log(checker)
     if(!checker){
         return res.status(403).json({
             error: "Access denied."
@@ -95,7 +95,7 @@ const isAuthenticated = (req, res, next) => {
 }
 
 const isFarmer = (req, res, next) => {
-  console.log(req.profile)
+//   console.log(req.profile)
     if(req.profile.role === 0){ 
         res.status(403).json({
             error: "only admin access."

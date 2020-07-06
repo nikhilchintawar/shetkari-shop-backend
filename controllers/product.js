@@ -134,7 +134,8 @@ const photo = (req, res, next) =>{
 
 //delete controller
 const deleteProduct = (req, res) => {
-    Product.deleteOne((error, deleteProduct) => {
+    let product = req.product;
+    product.deleteOne((error, deleteProduct) => {
         if(error){
             return res.satus(400).json({
                 error: "not able to delete the product"
@@ -144,15 +145,16 @@ const deleteProduct = (req, res) => {
             message: "product is deleted",
             deleteProduct
         })
-
     })
 }
+
 
 const getAllProducts = (req, res) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 8
     let sortBy = req.query.sortBy ? req.query.sortBy : '_id'
 
     Product.find()
+    .select("-photo")
     .sort([[sortBy, 'asc']])
     .limit(limit)
     .exec((error, products) => {
@@ -172,7 +174,6 @@ const updateStock = (req, res, next) => {
             updateOne: {
                 filter: { _id: product._id },
                 update: { $inc: {stock: -product.count, sold: +product.count}}
-
             }
         }
     })
