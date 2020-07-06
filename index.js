@@ -11,6 +11,9 @@ const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 
 
+//config
+const passport = require("./config/passport");
+
 const app = express()
 
 //port
@@ -28,8 +31,10 @@ mongoose.connect(process.env.DATABASE,{
 
 //middlewares
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookiParser());
 app.use(cors());
+// app.use(passport.initialize());
 
 //routes
 app.use("/api", authRoutes)

@@ -16,11 +16,12 @@ const getUserById = (req, res, next, id)=> {
 
 const getUser = (req, res) =>{
 
+
     req.profile.salt = undefined
     req.profile.encry_password = undefined
     req.profile.createdAt = undefined
     req.profile.updatedAt = undefined
-    console.log(req.profile)
+    // console.log(req.profile)
     return res.json(req.profile)
 }
 
@@ -95,10 +96,9 @@ const pushOrderInPurchaseList = (req, res, next) =>{
                     error: 'unable to save purchase list'
                 })
             }
-            next()
+            next();
         } 
         )
-   
 }
 
 module.exports = ({

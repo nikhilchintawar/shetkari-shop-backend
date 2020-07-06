@@ -3,7 +3,6 @@ const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const expressjwt = require("express-jwt");
 
-
 const signup = (req, res) => {
     const errors = validationResult(req)
 
@@ -58,7 +57,7 @@ const signin = (req, res) => {
             });
         } else{
         //created token
-        const token = jwt.sign({_id: user}, process.env.SECRET)
+        const token = jwt.sign({_id: user._id}, process.env.SECRET)
         //put token in cookie
         res.cookie("token", token, {expire: new Date() + 300})
         //send response to frontend
@@ -83,10 +82,10 @@ const isSignedIn = expressjwt({
 
 //custom middleware
 const isAuthenticated = (req, res, next) => {
-    let checker = req.profile && req.auth && req.profile._id == req.auth._id._id
-    // console.log(req.profile._id);
-    // console.log(req.auth._id._id);
-    // console.log(checker)
+    let checker = req.profile && req.auth && req.profile._id == req.auth._id
+    console.log(req.profile._id);
+    console.log(req.auth._id);
+    console.log(checker)
     if(!checker){
         return res.status(403).json({
             error: "Access denied."
@@ -95,8 +94,8 @@ const isAuthenticated = (req, res, next) => {
     next();
 }
 
-const isFarmer = (error,req, res, next) => {
-  
+const isFarmer = (req, res, next) => {
+  console.log(req.profile)
     if(req.profile.role === 0){ 
         res.status(403).json({
             error: "only admin access."

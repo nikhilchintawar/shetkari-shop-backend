@@ -71,12 +71,13 @@ const getProduct = (req, res) => {
                 error: 'no product found'
             })
         }
-    return res.json(product)
+        req.product.photo = undefined;
+        return res.json(product)
 })
 }
 
 
-const updateProduct = ( req, res ) =>{
+const updateProduct = (req, res) =>{
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
 
@@ -123,7 +124,8 @@ const updateProduct = ( req, res ) =>{
 //middleware
 const photo = (req, res, next) =>{
     if (req.product.photo.data) {
-        res.contentType(req.product.photo.contentType)
+        // res.contentType(req.product.photo.contentType)
+        res.set("Content-Type", req.product.photo.contentType);
         return res.send(req.product.photo.data)
     }
     next();
@@ -151,7 +153,6 @@ const getAllProducts = (req, res) => {
     let sortBy = req.query.sortBy ? req.query.sortBy : '_id'
 
     Product.find()
-    .select('-photo')
     .sort([[sortBy, 'asc']])
     .limit(limit)
     .exec((error, products) => {
